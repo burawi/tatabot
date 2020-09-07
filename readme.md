@@ -56,9 +56,9 @@ See [the example above](#example)
 
 In addition to object and schema `validate` function takes a third argument, containing
 validation settings:
-* keepAdditional: true|false, if set to `true`, additional properties in object that are 
+* `keepAdditional`: true|false, if set to `true`, additional properties in object that are 
     not mentioned in schema, will not be removed.
-* noRequired: true|false, if set to `true`, `required` type will not be handled, this is
+* `noRequired`: true|false, if set to `true`, `required` type will not be handled, this is
     useful when you are validating an object intended for update purpose and which does not
     need to include all properties.
 
@@ -136,17 +136,20 @@ Checks if value is a valid email.
 Checks if value is a valid url.
 ### `integer`
 Checks if `parseInt` of value is not NaN.
+
 **options:**
 * min: mininmum value
 * max: maximum value
-Note: float will coerce to integers and not throw error.
+* blockFloat: true|false, wether to block floats or to parse them to int. Default false.
 ### `float`
 Checks if `parseFloat` of value is not NaN.
+
 **options:**
 * min: mininmum value
 * max: maximum value
 ### `enum`
 Checks if value is listed among `values` option.
+
 **options:**
 * values: list of allowed values
 
@@ -158,6 +161,7 @@ Eg:
 ```
 ### `object`
 Handles the value as plain object, according to its `schema` option.
+
 **options:**
 * schema: schema of object
 
@@ -171,7 +175,8 @@ Eg:
 }
 ```
 ### `array`
-Checks the validity of the array
+Checks the validity of the array.
+
 **options:**
 * minItems: minimum length of array
 * maxItems: maximum length of array

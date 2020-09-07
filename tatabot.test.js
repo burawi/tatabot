@@ -146,6 +146,25 @@ test("Not Giving required data, but should be valid", () => {
   expect(errors).toHaveLength(0);
 });
 
+test("Giving float instead of int, should return error", () => {
+  const item = { age: "1.3" };
+  const strict = { ...schema, age: { type: "integer", blockFloat: true }}
+  const settings = { noRequired: true };
+  const {isValid, coersion, errors} = tatabot.validate(item, strict, settings);
+  expect(isValid).toBeFalsy();
+  expect(errors).toHaveLength(1);
+});
+
+test("Giving float instead of int, should be valid", () => {
+  const item = { age: "1.3" };
+  const strict = { ...schema, age: { type: "integer" }}
+  const settings = { noRequired: true };
+  const {isValid, coersion, errors} = tatabot.validate(item, strict, settings);
+  expect(isValid).toBeTruthy();
+  expect(coersion).toEqual({ age: 1 });
+  expect(errors).toHaveLength(0);
+});
+
 test("Giving additional data, should be removed", () => {
   const item = { name: "Burawi", lastName: "Wady" };
   const {isValid, coersion, errors} = tatabot.validate(item, schema);

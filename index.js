@@ -44,10 +44,21 @@ addType("lowercase", {
 })
 
 addType("integer", {
-  coerce: (value, options) => parseInt(value),
-  validate: (value, {key, propOptions}) => {
-    const {min, max} = propOptions;
+  coerce: (value, {propOptions}) => {
+    const {blockFloat} = propOptions;
+    const parsed = parseInt(value);
+    // if floats are blocked and value is a strict int coerce value
+    if(blockFloat && +value === parsed) return parsed;
+    // if floats are blocked and value is not a strict int does not coerce
+    if(blockFloat) return value;
+    // if floats are bot blocked just coerce without check
+    return parsed;
+  },
+  validate: (value, {key, propOptions, settings}) => {
+    const {min, max, blockFloat} = propOptions;
     const errors = [];
+    if(blockFloat && +value !== parseInt(value))
+      errors.push(`${key} should be a strict integer`)
     if(isNaN(value)) errors.push(`${key} not valid integer`)
     if(min !== undefined && value < min) 
       errors.push(`${key} should be greater than ${min}`)
