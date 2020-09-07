@@ -1,4 +1,7 @@
 const tatabot = require("./index.js");
+const dayjs = require("dayjs");
+const customParseFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(customParseFormat)
 
 const schema = {
   "*name":  "string",
@@ -163,6 +166,86 @@ test("Giving float instead of int, should be valid", () => {
   expect(isValid).toBeTruthy();
   expect(coersion).toEqual({ age: 1 });
   expect(errors).toHaveLength(0);
+});
+
+test("Giving date without format, should be valid", () => {
+  const item = { createdAt: new Date() };
+  const schema = { createdAt: "date" };
+  const {isValid, coersion, errors} = tatabot.validate(item, schema);
+  expect(errors).toHaveLength(0);
+  expect(isValid).toBeTruthy();
+  expect(coersion).toEqual({ createdAt: item.createdAt });
+});
+
+test("Giving date with format, should be valid", () => {
+  const item = { createdAt: "20-06-2018" }
+  const dateSchema = { createdAt: {type: "date", format: "DD-MM-YYYY"}};
+  const {isValid, coersion, errors} = tatabot.validate(item, dateSchema);
+  expect(errors).toHaveLength(0);
+  expect(isValid).toBeTruthy();
+  expect(coersion).toEqual({
+    createdAt: dayjs("20-06-2018", "DD-MM-YYYY").toDate()
+  });
+});
+
+test("Giving date with before, should be valid", () => {
+  const item = { createdAt: "20-06-2018" }
+  const dateSchema = { createdAt: {
+    type: "date",
+    format: "DD-MM-YYYY",
+    before: () => dayjs("20-20-2020", "DD-MM-YYYY")
+  }};
+  const {isValid, coersion, errors} = tatabot.validate(item, dateSchema);
+  expect(errors).toHaveLength(0);
+  expect(isValid).toBeTruthy();
+  expect(coersion).toEqual({
+    createdAt: dayjs("20-06-2018", "DD-MM-YYYY").toDate()
+  });
+});
+
+test("Giving date with before, should fail", () => {
+  const item = { createdAt: "20-06-2018" }
+  const dateSchema = { createdAt: {
+    type: "date",
+    format: "DD-MM-YYYY",
+    before: () => dayjs("20-05-2018", "DD-MM-YYYY")
+  }};
+  const {isValid, coersion, errors} = tatabot.validate(item, dateSchema);
+  expect(errors).toHaveLength(1);
+  expect(isValid).toBeFalsy();
+  expect(coersion).toEqual({
+    createdAt: dayjs("20-06-2018", "DD-MM-YYYY").toDate()
+  });
+});
+
+test("Giving date with after, should be valid", () => {
+  const item = { createdAt: "20-06-2018" }
+  const dateSchema = { createdAt: {
+    type: "date",
+    format: "DD-MM-YYYY",
+    after: () => dayjs("20-05-2018", "DD-MM-YYYY")
+  }};
+  const {isValid, coersion, errors} = tatabot.validate(item, dateSchema);
+  expect(errors).toHaveLength(0);
+  expect(isValid).toBeTruthy();
+  expect(coersion).toEqual({
+    createdAt: dayjs("20-06-2018", "DD-MM-YYYY").toDate()
+  });
+});
+
+test("Giving date with after, should fail", () => {
+  const item = { createdAt: "20-06-2018" }
+  const dateSchema = { createdAt: {
+    type: "date",
+    format: "DD-MM-YYYY",
+    after: () => dayjs("20-20-2020", "DD-MM-YYYY")
+  }};
+  const {isValid, coersion, errors} = tatabot.validate(item, dateSchema);
+  expect(errors).toHaveLength(1);
+  expect(isValid).toBeFalsy();
+  expect(coersion).toEqual({
+    createdAt: dayjs("20-06-2018", "DD-MM-YYYY").toDate()
+  });
 });
 
 test("Giving additional data, should be removed", () => {

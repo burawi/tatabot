@@ -159,6 +159,30 @@ Eg:
   role: {type: "enum", values: ["admin", "follower"]}
 }
 ```
+
+### `date`
+Check if value is a valid date. and coerces it to date object.
+
+`Tatabot` uses [`dayjs`](https://day.js.org/) for date validation and parsing.
+
+**options**
+* format: the format of given date. see [`dayjs Doc`](https://day.js.org/docs/en/parse/string-format)
+* before: a function that should return a date (or `dayjs` instance). to check wether or not the given date is before it.
+* after: a function similar to `before`, but for after checking.
+
+Eg:
+```javascript
+const schema = { createdAt: {
+  type: "date",
+  format: "DD-MM-YYYY",
+  after: () => dayjs("20-20-2020", "DD-MM-YYYY")
+}};
+const item = { createdAt: "20-06-2018" }
+const {isValid, coersion, errors} = tatabot.validate(item, schema);
+// isValid: false 
+// errors: ["createdAt should be after 20-20-2020"]
+```
+
 ### `object`
 Handles the value as plain object, according to its `schema` option.
 

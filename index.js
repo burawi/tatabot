@@ -1,3 +1,7 @@
+const dayjs = require("dayjs");
+const customParseFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(customParseFormat)
+
 const types = {};
 
 const addType = (name, processors) => { types[name] = processors }
@@ -58,7 +62,7 @@ addType("integer", {
     const {min, max, blockFloat} = propOptions;
     const errors = [];
     if(blockFloat && +value !== parseInt(value))
-      errors.push(`${key} should be a strict integer`)
+      return [`${key} should be a strict integer`]
     if(isNaN(value)) errors.push(`${key} not valid integer`)
     if(min !== undefined && value < min) 
       errors.push(`${key} should be greater than ${min}`)
@@ -113,6 +117,26 @@ addType("enum", {
     const errors = [];
     if(!values.includes(value))
       errors.push(`This value of ${key} is not allowed`)
+    return errors;
+  }
+})
+
+addType("date", {
+  coerce: (value, {propOptions}) => {
+    const {format} = propOptions;
+    const parsed = dayjs(value, format);
+    if(parsed.isValid()) return parsed.toDate();
+    return value;
+  },
+  validate: (value, {key, propOptions}) => {
+    const {format, before, after} = propOptions;
+    const errors = [];
+    const parsed = dayjs(value);
+    if(!parsed.isValid()) return [`${key} is not a valid date`];
+    if(before && !parsed.isBefore(dayjs(before()))) 
+      errors.push(`${key} should be before ${before()}`)
+    if(after && !parsed.isAfter(dayjs(after()))) 
+      errors.push(`${key} should be after ${after()}`)
     return errors;
   }
 })
