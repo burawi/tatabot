@@ -1,16 +1,22 @@
 {
   "name": "tatabot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple yet powerful json validator",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["json", "schema", "validation", "immutability", "modular"],
+  "keywords": [
+    "json",
+    "schema",
+    "validation",
+    "immutability",
+    "modular"
+  ],
   "author": "Burawi Ben Ammar From Tildah",
   "repository": {
-      "type": "git",
-      "url": "https://gitlab.com/tildah/tatabot"
+    "type": "git",
+    "url": "https://gitlab.com/tildah/tatabot"
   },
   "license": "ISC",
   "devDependencies": {
